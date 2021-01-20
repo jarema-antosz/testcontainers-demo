@@ -1,0 +1,17 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+   http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="antoszj" id="0001">
+        <sql>create sequence book_sequence;</sql>
+        <sql>CREATE TABLE book(id bigint NOT NULL, author character varying(255) COLLATE pg_catalog."default", title character varying(255) COLLATE pg_catalog."default", version integer NOT NULL, CONSTRAINT book_pkey PRIMARY KEY (id))</sql>
+        <sql>INSERT INTO book(id, author, title, version) VALUES(nextval('book_sequence'), 'Thorben Janssen', 'Hibernate Tips - More than 70 solutions to common Hibernate problems', 0);</sql>
+        <sql>INSERT INTO book(id, author, title, version) VALUES(nextval('book_sequence'), 'Vlad Mihalcea', 'High-Performance Java Persistence', 0);</sql>
+    </changeSet>
+
+</databaseChangeLog>
