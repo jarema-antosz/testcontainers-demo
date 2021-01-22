@@ -19,17 +19,25 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = DemoApplication.class)
-@Testcontainers(disabledWithoutDocker = true)
-public class BookRepositoryTest {
+/**
+ * set property testcontainers.reuse.enable=true
+ * inside home dir in file .testcontainers.properties
+ */
+public class BookRepositoryTestWithReuse {
 
-    @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:11.1")
-            .withDatabaseName("demo-app-tests-db")
-            .withUsername("sa")
-            .withPassword("sa");
+    public static PostgreSQLContainer postgreSQLContainer;
+
+    static {
+        postgreSQLContainer = (PostgreSQLContainer) new PostgreSQLContainer("postgres:11.1")
+                .withDatabaseName("demo-app-tests-db")
+                .withUsername("sa")
+                .withPassword("sa").withReuse(true);
+
+        postgreSQLContainer.start();
+    }
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
@@ -42,6 +50,7 @@ public class BookRepositoryTest {
     private BookRepository bookRepository;
 
     @Test
+    @Ignore
     public void dataShouldBeAvailableInDB() {
         System.out.println(postgreSQLContainer.getJdbcUrl());
         List<Book> result = bookRepository.findAll();
@@ -49,8 +58,9 @@ public class BookRepositoryTest {
     }
 
     @Test
-    @Ignore
     public void shouldStore() {
+        System.out.println(postgreSQLContainer.getJdbcUrl());
+
         Book book = new Book();
         book.setAuthor("author_" + UUID.randomUUID());
         book.setTitle("title_" + UUID.randomUUID());
@@ -59,7 +69,6 @@ public class BookRepositoryTest {
 
         List<Book> result = bookRepository.findAll();
         System.out.println("number of books " + result.size());
-        assertThat(result.size()).isEqualTo(3);
     }
 
 }
